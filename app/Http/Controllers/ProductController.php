@@ -13,9 +13,18 @@ class ProductController extends Controller
         return response()->json($product, 201);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Product::all());
+        // TODO: add other filter and sorting options
+        $barcode = $request->query('barcode');
+
+        if ($barcode) {
+            $products = Product::where('barcode', $barcode)->get();
+        } else {
+            $products = Product::all();
+        }
+
+        return response()->json($products);
     }
 
     public function show(Product $product)
