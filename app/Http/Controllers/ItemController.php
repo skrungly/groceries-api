@@ -15,11 +15,12 @@ class ItemController extends Controller
 
     public function index()
     {
-        return response()->json(Item::all());
+        return response()->json(Item::with('product')->get());
     }
 
-    public function show(Item $item)
+    public function show(string $id)
     {
+        $item = Item::with('product')->findOrFail($id);
         return response()->json($item);
     }
 
