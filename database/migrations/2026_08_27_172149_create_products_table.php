@@ -18,11 +18,11 @@ return new class extends Migration
 
             // as with items, almost all fields are optional for ease of use
             $table->string('name', '128');
-            $table->string('barcode', '128')->nullable();
-            $table->integer('shelf_life_opened')->nullable();
+            $table->string('barcode', '128')->nullable()->default(null)->unique();
+            $table->integer('shelf_life_opened')->nullable()->default(null);
             $table->integer('quantity')->default(1);
-            $table->decimal('cost')->nullable();
-            $table->integer('net_weight')->nullable();
+            $table->decimal('cost')->nullable()->default(null);
+            $table->integer('net_weight')->nullable()->default(null);
         });
     }
 
