@@ -7,9 +7,22 @@ use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
+    private const VALIDATION_RULES = [
+        'user_id' => ['exclude'],  // for now
+        'expires_at' => ['nullable', 'date'],
+        'opened_at' => ['nullable', 'date'],
+        'percent_remaining' => ['nullable', 'integer'],
+        'percent_wasted' => ['nullable', 'integer'],
+    ];
+
     public function store(Request $request)
     {
-        $item = Item::create($request->all());
+        $validated = $request->validate(array_merge(
+            self::VALIDATION_RULES,
+            ['product_id' => ['required', 'uuid', 'exists:products,id']]
+        ));
+
+        $item = Item::create($validated);
         return response()->json($item, 201);
     }
 
@@ -26,7 +39,12 @@ class ItemController extends Controller
 
     public function update(Request $request, Item $item)
     {
-        $item->update($request->all());
+        $validated = $request->validate(array_merge(
+            self::VALIDATION_RULES,
+            ['product_id' => ['exclude']]
+        ));
+
+        $item->update($validated);
         return response()->json($item, 201);
     }
 
