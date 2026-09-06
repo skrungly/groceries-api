@@ -22,6 +22,10 @@ class ItemController extends Controller
             ['product_id' => ['required', 'uuid', 'exists:products,id']]
         ));
 
+        // standardise the format going into the database
+        $validated['expires_at'] = $request->date('expires_at');
+        $validated['opened_at'] = $request->date('opened_at');
+
         $item = Item::create($validated);
         return response()->json($item, 201);
     }
@@ -43,6 +47,10 @@ class ItemController extends Controller
             self::VALIDATION_RULES,
             ['product_id' => ['exclude']]
         ));
+
+        // standardise the format going into the database
+        $validated['expires_at'] = $request->date('expires_at');
+        $validated['opened_at'] = $request->date('opened_at');
 
         $item->update($validated);
         return response()->json($item, 201);
