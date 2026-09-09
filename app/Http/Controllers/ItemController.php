@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
-use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -52,6 +51,7 @@ class ItemController extends Controller
             'remaining' => ['nullable', 'boolean'],
             'wasted' => ['nullable', 'boolean'],
             'barcode' => ['nullable'],
+            'name' => ['nullable'],
         ]);
 
         $options['sort'] ??= array_keys(self::SORT_OPTIONS)[0];
@@ -85,6 +85,10 @@ class ItemController extends Controller
 
         if (isset($options['barcode'])) {
             $query = $query->where("products.barcode", $options['barcode']);
+        }
+
+        if (isset($options['name'])) {
+            $query = $query->whereLike("products.name", "%" . $options['name'] . "%");
         }
 
         return response()->json($query->get());
