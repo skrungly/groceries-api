@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
-    private const VALIDATION_RULES = [
+    private const array VALIDATION_RULES = [
         'user_id' => ['exclude'],  // for now
         'expires_at' => ['nullable', 'date'],
         'opened_at' => ['nullable', 'date'],
@@ -17,7 +17,7 @@ class ItemController extends Controller
 
     // map: sort option => 'select' table prefix. the first option in
     // this array is used as the default sort option.
-    private const SORT_OPTIONS = [
+    private const array SORT_OPTIONS = [
         'soonest_expiry' => '',
         'created_at' => 'items.',
         'updated_at' => 'items.',
@@ -26,10 +26,10 @@ class ItemController extends Controller
 
     public function store(Request $request)
     {
-        $itemInfo = $request->validate(array_merge(
-            self::VALIDATION_RULES,
-            ['product_id' => ['required', 'uuid', 'exists:products,id']]
-        ));
+        $itemInfo = $request->validate([
+            'product_id' => ['required', 'uuid', 'exists:products,id'],
+            ...self::VALIDATION_RULES,
+        ]);
 
         // standardise the format going into the database
         $itemInfo['expires_at'] = $request->date('expires_at');
@@ -102,10 +102,10 @@ class ItemController extends Controller
 
     public function update(Request $request, Item $item)
     {
-        $itemInfo = $request->validate(array_merge(
-            self::VALIDATION_RULES,
-            ['product_id' => ['exclude']]
-        ));
+        $itemInfo = $request->validate([
+            'product_id' => ['exclude'],
+            ...self::VALIDATION_RULES,
+        ]);
 
         // standardise the format going into the database
         $itemInfo['expires_at'] = $request->date('expires_at');
