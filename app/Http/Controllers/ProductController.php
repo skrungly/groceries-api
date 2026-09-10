@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    private const VALIDATION_RULES = [
+    private const array VALIDATION_RULES = [
         'user_id' => ['exclude'],  // for now
         'shelf_life_opened' => ['nullable', 'integer'],
         'quantity' => ['nullable', 'integer'],
@@ -17,13 +17,11 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate(array_merge(
-            self::VALIDATION_RULES,
-            [
-                'name' => ['required', 'max:128'],
-                'barcode' => ['required', 'max:128'],
-            ]
-        ));
+        $validated = $request->validate([
+            'name' => ['required', 'max:128'],
+            'barcode' => ['required', 'max:128'],
+            ...self::VALIDATION_RULES,
+        ]);
 
         $product = Product::create($validated);
         return response()->json($product, 201);
@@ -34,11 +32,9 @@ class ProductController extends Controller
         // TODO: add other filter and sorting options
         $barcode = $request->query('barcode');
 
-        if ($barcode) {
-            $products = Product::where('barcode', $barcode)->get();
-        } else {
-            $products = Product::all();
-        }
+        $products = $barcode
+            ? Product::where('barcode', $barcode)->get()
+            : Product::all();
 
         return response()->json($products);
     }
@@ -50,13 +46,11 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate(array_merge(
-            self::VALIDATION_RULES,
-            [
-                'name' => ['nullable', 'max:128'],
-                'barcode' => ['exclude'],
-            ]
-        ));
+        $validated = $request->validate([
+            'name' => ['nullable', 'max:128'],
+            'barcode' => ['exclude'],
+            ...self::VALIDATION_RULES,
+        ]);
 
         $product->update($validated);
         return response()->json($product, 201);

@@ -42,12 +42,12 @@ class ItemController extends Controller
 
     public function index(Request $request)
     {
-        $sort_option_regex = (
+        $sortOptionRegex = (
             '/^-?' . implode('|', array_keys(self::SORT_OPTIONS)) . '$/'
         );
 
         $options = $request->validate([
-            'sort' => ['nullable', "regex:$sort_option_regex"],
+            'sort' => ['nullable', "regex:$sortOptionRegex"],
             'remaining' => ['nullable', 'boolean'],
             'wasted' => ['nullable', 'boolean'],
             'barcode' => ['nullable'],
@@ -55,12 +55,12 @@ class ItemController extends Controller
         ]);
 
         $options['sort'] ??= array_keys(self::SORT_OPTIONS)[0];
-        $sortDirection = "ASC";
+        $sortDirection = 'ASC';
 
         // allow using a leading '-' to designate reverse sorting
         if (str_starts_with($options['sort'], '-')) {
             $options['sort'] = substr($options['sort'], 1);
-            $sortDirection = "DESC";
+            $sortDirection = 'DESC';
         }
 
         $tablePrefix = self::SORT_OPTIONS[$options['sort']];
@@ -79,16 +79,16 @@ class ItemController extends Controller
                 continue;
             }
 
-            $cmp = $options[$filter] ? ">" : "=";
-            $query = $query->where("items.percent_$filter", $cmp, "0");
+            $cmp = $options[$filter] ? '>' : '=';
+            $query = $query->where("items.percent_$filter", $cmp, '0');
         }
 
         if (isset($options['barcode'])) {
-            $query = $query->where("products.barcode", $options['barcode']);
+            $query = $query->where('products.barcode', $options['barcode']);
         }
 
         if (isset($options['name'])) {
-            $query = $query->whereLike("products.name", "%" . $options['name'] . "%");
+            $query = $query->whereLike('products.name', '%' . $options['name'] . '%');
         }
 
         return response()->json($query->get());
